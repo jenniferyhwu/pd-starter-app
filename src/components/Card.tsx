@@ -19,6 +19,7 @@ type CardProps = (UnsetCardProps | SetCardProps) & {
 
 interface InputFormProps {
   inputRef: React.RefObject<HTMLInputElement>;
+  name?: string;
   onInputKeyDown: (key: React.KeyboardEvent<HTMLInputElement>) => void;
   onInputChangeConfirm: () => void;
   onInputChangeCancel: () => void;
@@ -123,25 +124,11 @@ const UnsetContainer = styled(Container)`
 
 const SetContainer = styled(Container)`
   background: ${constants.color.palegreen};
-
-  /* :hover {
-    .name--container::before {
-      background: black;
-      opacity: 0.5;
-    }
-
-    .name--text {
-      color: ${constants.color.white};
-    }
-
-    .name--action {
-      opacity: 1;
-    }
-  } */
 `;
 
 const InputForm: React.FC<InputFormProps> = ({
   inputRef,
+  name = "",
   onInputKeyDown = () => {},
   onInputChangeConfirm = () => {},
   onInputChangeCancel = () => {},
@@ -149,10 +136,11 @@ const InputForm: React.FC<InputFormProps> = ({
   <>
     <CardInput
       placeholder="Dish name"
+      value={name}
       maxLength={80}
       onKeyDown={(e) => onInputKeyDown(e)}
       ref={inputRef}
-    ></CardInput>
+    />
     <ButtonContainer>
       <ActionButton onClick={onInputChangeConfirm} aria-label="confirm">
         <Check />
@@ -229,6 +217,7 @@ const SetCard: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
         {editing ? (
           <InputForm
             inputRef={inputRef}
+            name={name}
             onInputKeyDown={onKeyDownEdit}
             onInputChangeConfirm={onInternalEdit}
             onInputChangeCancel={() => setEditing(false)}
