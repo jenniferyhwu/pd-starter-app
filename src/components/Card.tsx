@@ -3,13 +3,19 @@ import styled from "styled-components";
 import constants from "src/constants";
 import { Trash, Plus, Check, X, Edit2 } from "react-feather";
 
-interface CardProps {
-  unset?: boolean;
-  name?: string;
-  onAdd?: (name: string) => void;
-  onEdit?: (oldName: string, name: string) => void;
-  onDelete?: (name: string) => void;
+interface UnsetCardProps {
+  onAdd: (name: string) => void;
 }
+
+interface SetCardProps {
+  name: string;
+  onEdit: (oldName: string, name: string) => void;
+  onDelete: (name: string) => void;
+}
+
+type CardProps = (UnsetCardProps | SetCardProps) & {
+  unset?: boolean;
+};
 
 interface InputFormProps {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -24,12 +30,18 @@ const ActionButton = styled.button`
   outline: none;
   background: none;
   transition: opacity 0.5s, color 0.2s;
+
+  :hover,
+  :focus {
+    color: ${constants.color.mediumpalegreen};
+  }
 `;
 
 const PrimaryActionButton = styled(ActionButton)`
   color: ${constants.color.green};
 
-  :hover {
+  :hover,
+  :focus {
     color: ${constants.color.mediumpalegreen};
   }
 `;
@@ -85,10 +97,9 @@ const NameContainer = styled.div`
 `;
 
 const Container = styled.div`
-  height: 250px;
-  width: 250px;
+  height: 230px;
+  width: 230px;
   border-radius: 20px;
-  margin: 15px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -143,25 +154,18 @@ const InputForm: React.FC<InputFormProps> = ({
       ref={inputRef}
     ></CardInput>
     <ButtonContainer>
-      <ActionButton onClick={onInputChangeConfirm}>
+      <ActionButton onClick={onInputChangeConfirm} aria-label="confirm">
         <Check />
       </ActionButton>
-      <ActionButton onClick={onInputChangeCancel}>
+      <ActionButton onClick={onInputChangeCancel} aria-label="cancel">
         <X />
       </ActionButton>
     </ButtonContainer>
   </>
 );
 
-const Card: React.FC<CardProps> = ({
-  unset = false,
-  name = "",
-  onAdd = () => {},
-  onEdit = () => {},
-  onDelete = () => {},
-}) => {
-  const [editing, setEditing] = useState(false);
-  const [adding, setAdding] = useState(false);
+const UnsetCard: React.FC<UnsetCardProps> = ({ onAdd }) => {
+  const [adding, setAdding] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onChange = useCallback(() => {
@@ -173,11 +177,6 @@ const Card: React.FC<CardProps> = ({
     if (inputRef.current) onAdd(inputRef.current.value);
   }, [onAdd]);
 
-  const onInternalEdit = useCallback(() => {
-    setEditing(false);
-    if (inputRef.current) onEdit(name, inputRef.current.value);
-  }, [name, onEdit]);
-
   const onKeyDownAdd = useCallback(
     (e) => {
       if (e.key === "Enter") onInternalAdd();
@@ -185,18 +184,12 @@ const Card: React.FC<CardProps> = ({
     [onInternalAdd]
   );
 
-  const onKeyDownEdit = useCallback(
-    (e) => {
-      if (e.key === "Enter") onInternalEdit();
-    },
-    [onInternalEdit]
-  );
-
-  return unset ? (
+  return (
     <UnsetContainer
       as={adding ? "div" : "button"}
       className={adding ? "adding" : ""}
-      onClick={() => onChange()}
+      aria-label={adding ? "" : "add dish"}
+      onClick={onChange}
     >
       {adding ? (
         <NameContainer className="unset--container">
@@ -211,7 +204,26 @@ const Card: React.FC<CardProps> = ({
         <Plus size={70} strokeWidth={1} />
       )}
     </UnsetContainer>
-  ) : (
+  );
+};
+
+const SetCard: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
+  const [editing, setEditing] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onInternalEdit = useCallback(() => {
+    setEditing(false);
+    if (inputRef.current) onEdit(name, inputRef.current.value);
+  }, [name, onEdit]);
+
+  const onKeyDownEdit = useCallback(
+    (e) => {
+      if (e.key === "Enter") onInternalEdit();
+    },
+    [onInternalEdit]
+  );
+
+  return (
     <SetContainer>
       <NameContainer className="name name--container">
         {editing ? (
@@ -228,12 +240,14 @@ const Card: React.FC<CardProps> = ({
               <PrimaryActionButton
                 className="name name--action"
                 onClick={() => setEditing(true)}
+                aria-label="edit dish"
               >
                 <Edit2 />
               </PrimaryActionButton>
               <PrimaryActionButton
                 className="name name--action"
                 onClick={() => onDelete(name)}
+                aria-label="delete dish"
               >
                 <Trash />
               </PrimaryActionButton>
@@ -243,6 +257,28 @@ const Card: React.FC<CardProps> = ({
       </NameContainer>
     </SetContainer>
   );
+};
+
+const Card: React.FC<CardProps> = ({ unset = false, ...rest }) => {
+  if (unset) {
+    if ("onAdd" in rest) {
+      return <UnsetCard onAdd={rest.onAdd} />;
+    } else {
+      throw new TypeError("Your props are incompatible with an unset Dish");
+    }
+  } else {
+    if ("name" in rest) {
+      return (
+        <SetCard
+          name={rest.name}
+          onEdit={rest.onEdit}
+          onDelete={rest.onDelete}
+        />
+      );
+    } else {
+      throw new TypeError("Your props are incompatible with an set Dish");
+    }
+  }
 };
 
 export default Card;

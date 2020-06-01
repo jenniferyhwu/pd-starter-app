@@ -2,7 +2,7 @@ const constants = {
   color: {
     green: "#06ac38",
     mediumpalegreen: "#93cf78",
-    palegreen: "#d4f0c7",
+    palegreen: "#e2f5da",
     white: "white",
   },
 };

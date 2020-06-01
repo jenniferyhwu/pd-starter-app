@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
-import constants from "src/constants";
 import Card from "src/components/Card";
 
 const Container = styled.div`
@@ -8,6 +7,11 @@ const Container = styled.div`
   margin: 0 -15px;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+
+  > * {
+    margin: 15px;
+  }
 `;
 
 const Grid = () => {
