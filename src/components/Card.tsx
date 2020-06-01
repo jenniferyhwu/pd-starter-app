@@ -132,25 +132,30 @@ const InputForm: React.FC<InputFormProps> = ({
   onInputKeyDown = () => {},
   onInputChangeConfirm = () => {},
   onInputChangeCancel = () => {},
-}) => (
-  <>
-    <CardInput
-      placeholder="Dish name"
-      value={name}
-      maxLength={80}
-      onKeyDown={(e) => onInputKeyDown(e)}
-      ref={inputRef}
-    />
-    <ButtonContainer>
-      <ActionButton onClick={onInputChangeConfirm} aria-label="confirm">
-        <Check />
-      </ActionButton>
-      <ActionButton onClick={onInputChangeCancel} aria-label="cancel">
-        <X />
-      </ActionButton>
-    </ButtonContainer>
-  </>
-);
+}) => {
+  const [inputValue, setInputValue] = useState<string>(name);
+
+  return (
+    <>
+      <CardInput
+        placeholder="Dish name"
+        value={inputValue}
+        maxLength={80}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => onInputKeyDown(e)}
+        ref={inputRef}
+      />
+      <ButtonContainer>
+        <ActionButton onClick={onInputChangeConfirm} aria-label="confirm">
+          <Check />
+        </ActionButton>
+        <ActionButton onClick={onInputChangeCancel} aria-label="cancel">
+          <X />
+        </ActionButton>
+      </ButtonContainer>
+    </>
+  );
+};
 
 const UnsetCard: React.FC<UnsetCardProps> = ({ onAdd }) => {
   const [adding, setAdding] = useState<boolean>(false);
