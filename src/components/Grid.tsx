@@ -16,11 +16,11 @@ const Container = styled.div`
 
 const Grid = () => {
   const [dishes, setDishes] = useState<string[]>([
-    "i could not think of a long enough dish name to test how long dish names display",
-    "Petri dish",
-    "Satellite dish",
-    "Dish antenna",
-    "The Dish",
+    // "i could not think of a long enough dish name to test how long dish names display",
+    // "Petri dish",
+    // "Satellite dish",
+    // "Dish antenna",
+    // "The Dish",
   ]);
 
   const addItem = useCallback(
