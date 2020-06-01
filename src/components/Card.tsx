@@ -13,10 +13,6 @@ interface SetCardProps {
   onDelete: (name: string) => void;
 }
 
-type CardProps = (UnsetCardProps | SetCardProps) & {
-  unset?: boolean;
-};
-
 interface InputFormProps {
   inputRef: React.RefObject<HTMLInputElement>;
   name?: string;
@@ -157,7 +153,7 @@ const InputForm: React.FC<InputFormProps> = ({
   );
 };
 
-const UnsetCard: React.FC<UnsetCardProps> = ({ onAdd }) => {
+export const UnsetCard: React.FC<UnsetCardProps> = ({ onAdd }) => {
   const [adding, setAdding] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -200,7 +196,7 @@ const UnsetCard: React.FC<UnsetCardProps> = ({ onAdd }) => {
   );
 };
 
-const SetCard: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
+const Card: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
   const [editing, setEditing] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -251,28 +247,6 @@ const SetCard: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
       </NameContainer>
     </SetContainer>
   );
-};
-
-const Card: React.FC<CardProps> = ({ unset = false, ...rest }) => {
-  if (unset) {
-    if ("onAdd" in rest) {
-      return <UnsetCard onAdd={rest.onAdd} />;
-    } else {
-      throw new TypeError("Your props are incompatible with an unset Dish");
-    }
-  } else {
-    if ("name" in rest) {
-      return (
-        <SetCard
-          name={rest.name}
-          onEdit={rest.onEdit}
-          onDelete={rest.onDelete}
-        />
-      );
-    } else {
-      throw new TypeError("Your props are incompatible with an set Dish");
-    }
-  }
 };
 
 export default Card;

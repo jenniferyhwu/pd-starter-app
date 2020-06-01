@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
-import Card from "src/components/Card";
+import Card, { UnsetCard } from "src/components/Card";
 
 const Container = styled.div`
   padding: 30px 0;
@@ -46,7 +46,7 @@ const Grid = () => {
 
   return (
     <Container>
-      <Card unset onAdd={addItem} />
+      <UnsetCard onAdd={addItem} />
       {dishes.map((dish) => (
         <Card key={dish} name={dish} onDelete={deleteItem} onEdit={editItem} />
       ))}
