@@ -200,6 +200,10 @@ const Card: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
   const [editing, setEditing] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const onChange = useCallback(() => {
+    if (!editing) setEditing(true);
+  }, [editing]);
+
   const onInternalEdit = useCallback(() => {
     setEditing(false);
     if (inputRef.current) onEdit(name, inputRef.current.value);
@@ -229,7 +233,7 @@ const Card: React.FC<SetCardProps> = ({ name, onEdit, onDelete }) => {
             <ButtonContainer>
               <PrimaryActionButton
                 className="name name--action"
-                onClick={() => setEditing(true)}
+                onClick={onChange}
                 aria-label="edit dish"
               >
                 <Edit2 />
